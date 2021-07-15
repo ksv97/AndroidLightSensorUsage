@@ -1,0 +1,2 @@
+rootProject.name = "PlayMusicOnLightChange"
+include ':app'
