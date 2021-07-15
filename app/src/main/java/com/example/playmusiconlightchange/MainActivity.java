@@ -2,6 +2,7 @@ package com.example.playmusiconlightchange;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -16,10 +17,11 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
+
+    boolean isMediaServiceRunning = false;
     SensorManager sensorManager;
     Sensor lightSensor;
     TextView data;
-    MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,14 +30,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         data = (TextView)findViewById(R.id.data);
-        player = MediaPlayer.create(getApplicationContext(), R.raw.rington);
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, lightSensor,SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, lightSensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -49,6 +49,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
             float sensorData = event.values[0];
             data.setText(sensorData + " ");
+            if (sensorData > 10) {
+                if (isMediaServiceRunning)
+                    return;
+
+                isMediaServiceRunning = true;
+                Intent i = new Intent(MainActivity.this, MediaService.class);
+                startService(i);
+            }
+            else if (isMediaServiceRunning) {
+                isMediaServiceRunning = false;
+                Intent i = new Intent(MainActivity.this, MediaService.class);
+                stopService(i);
+            }
         }
     }
 
