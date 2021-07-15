@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
             float sensorData = event.values[0];
             data.setText(sensorData + " ");
-            if (sensorData > 10) {
+            if (sensorData > 100) {
                 if (isMediaServiceRunning)
                     return;
 
